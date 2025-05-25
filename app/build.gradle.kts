@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
 }
 
 android {
@@ -40,6 +41,12 @@ android {
 }
 
 dependencies {
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+
+    // Spotify SDK (opcional si usas solo la API web)
+    implementation("com.spotify.android:auth:1.2.5")
 
     // Jetpack Compose
     implementation ("androidx.activity:activity-compose:1.8.2")

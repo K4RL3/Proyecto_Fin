@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.plisfunciona.modelo.Playlist
@@ -22,34 +23,25 @@ fun PlaylistCard(
     Card(
         modifier = modifier
             .width(160.dp)
-            .padding(8.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Column {
             AsyncImage(
-                model = playlist.images.firstOrNull()?.url ?: "",
-                contentDescription = "Portada de ${playlist.name}",
+                model = playlist.images?.firstOrNull()?.url,
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f),
+                    .height(160.dp),
                 contentScale = ContentScale.Crop
             )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
             Text(
                 text = playlist.name,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2
-            )
-            
-            Text(
-                text = "${playlist.tracks.total} canciones",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }

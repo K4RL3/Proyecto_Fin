@@ -1,64 +1,82 @@
 package com.example.plisfunciona.pantallas
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plisfunciona.componentes.TrackItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.setValue
-import com.example.plisfunciona.modelo.SearchResponse
-
+import com.example.plisfunciona.componentes.ArtistCard
+import com.example.plisfunciona.viewmodel.SpotifyVM
 
 @Composable
-fun SearchScreen(navController: NavController) {
-    var query by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<SearchResponse?>(null) }
+fun SearchScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: SpotifyVM = viewModel()
+    var searchQuery by remember { mutableStateOf("") }
+    val searchResults by viewModel.searchResults.collectAsState()
 
-    Column {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         // Barra de búsqueda
         TextField(
-            value = query,
-            onValueChange = { query = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Buscar canciones, artistas...") }
+            value = searchQuery,
+            onValueChange = { 
+                searchQuery = it
+                viewModel.searchContent(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            placeholder = { Text("Buscar canciones, artistas...") },
+            singleLine = true
         )
 
         // Resultados de búsqueda
-        when {
-            query.isEmpty() -> {
-                Text("Busca tu música favorita")
-            }
-            searchResults == null -> {
-                CircularProgressIndicator()
-            }
-            else -> {
-                // Resultados de canciones
-                searchResults?.tracks?.items?.let { tracks ->
-                    Text("Canciones", style = MaterialTheme.typography.h6)
-                    LazyColumn {
-                        items(tracks) { track ->
-                            TrackItem(track) {
-                                navController.navigate("player/${track.id}")
-                            }
-                        }
-                    }
+        LazyColumn {
+            // Sección de canciones
+            item {
+                if (searchResults.tracks.isNotEmpty()) {
+                    Text(
+                        text = "Canciones",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
+            }
+            
+            items(searchResults.tracks) { track ->
+                TrackItem(
+                    track = track,
+                    onClick = { navController.navigate("player/${track.id}") }
+                )
+            }
 
-                // Resultados de artistas
-                searchResults?.artists?.items?.let { artists ->
-                    Text("Artistas", style = MaterialTheme.typography.h6)
-                    LazyRow {
-                        items(artists) { artist ->
-                            ArtistCard(artist) {
-                                navController.navigate("artist/${artist.id}")
-                            }
-                        }
-                    }
+            // Sección de artistas
+            item {
+                if (searchResults.artists.isNotEmpty()) {
+                    Text(
+                        text = "Artistas",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
+            }
+
+            items(searchResults.artists) { artist ->
+                ArtistCard(
+                    artist = artist,
+                    onClick = { navController.navigate("artist/${artist.id}") }
+                )
             }
         }
     }

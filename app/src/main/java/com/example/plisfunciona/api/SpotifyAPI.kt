@@ -9,8 +9,9 @@ import com.example.plisfunciona.modelo.Artist
 import com.example.plisfunciona.modelo.TracksResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.OkHttpClient
+import javax.inject.Inject
 
-// Primero, crea una interfaz para los endpoints
 interface SpotifyService {
     @GET("me/playlists")
     suspend fun getUserPlaylists(): PlaylistResponse
@@ -35,16 +36,26 @@ interface SpotifyService {
     suspend fun getRecentTracks(): TracksResponse
 }
 
-// Luego, crea la clase SpotifyAPI que utiliza la interfaz
-class SpotifyAPI {
+class SpotifyAPI @Inject constructor(
+    private val authService: SpotifyAuthService
+) {
     private val BASE_URL = "https://api.spotify.com/v1/"
     
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer ${authService.getToken()}")
+                .build()
+            chain.proceed(request)
+        }
         .build()
 
-    private val spotifyService = retrofit.create(SpotifyService::class.java)
+    private val spotifyService = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(SpotifyService::class.java)
 
     // Métodos para acceder a los endpoints
     suspend fun getUserPlaylists() = spotifyService.getUserPlaylists()

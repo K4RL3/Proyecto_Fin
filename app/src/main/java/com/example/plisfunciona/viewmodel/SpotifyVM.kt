@@ -35,7 +35,7 @@ class SpotifyVM @Inject constructor(
     val artistTopTracks = _artistTopTracks.asStateFlow()
 
     //  Search
-    private val _searchResults = MutableStateFlow<SearchResults>(SearchResults())
+    private val _searchResults = MutableStateFlow(SearchResults())
     val searchResults = _searchResults.asStateFlow()
 
     //  Playlist
@@ -43,6 +43,10 @@ class SpotifyVM @Inject constructor(
     val userPlaylists = _userPlaylists.asStateFlow()
     private val _currentPlaylist = MutableStateFlow<Playlist?>(null)
     val currentPlaylist = _currentPlaylist.asStateFlow()
+
+    // Track
+    private val _currentTrack = MutableStateFlow<Track?>(null)
+    val currentTrack = _currentTrack.asStateFlow()
 
     //manejo de errores
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
@@ -73,17 +77,18 @@ class SpotifyVM @Inject constructor(
 
     fun searchContent(query: String) {
         viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            try {
-                val results = api.search(query)
-                _searchResults.value = SearchResults(
-                    tracks = results.tracks?.items ?: emptyList(),
-                    artists = results.artists?.items ?: emptyList(),
-                    playlists = results.playlists?.items ?: emptyList()
-                )
-                _uiState.value = UiState.Success
-            } catch (e: Exception) {
-                handleError(e)
+            if (query.length >= 2) {
+                try {
+                    val response = api.search(query)
+                    _searchResults.value = SearchResults(
+                        tracks = response.tracks?.items ?: emptyList(),
+                        artists = response.artists?.items ?: emptyList()
+                    )
+                } catch (e: Exception) {
+                    // Handle error
+                }
+            } else {
+                _searchResults.value = SearchResults()
             }
         }
     }
@@ -137,8 +142,7 @@ class SpotifyVM @Inject constructor(
 
     data class SearchResults(
         val tracks: List<Track> = emptyList(),
-        val artists: List<Artist> = emptyList(),
-        val playlists: List<Playlist> = emptyList()
+        val artists: List<Artist> = emptyList()
     )
 }
 

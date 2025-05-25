@@ -1,63 +1,57 @@
 package com.example.plisfunciona.pantallas
 
-import android.graphics.drawable.Icon
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-
-
+import com.example.plisfunciona.viewmodel.SpotifyVM
 
 @Composable
-fun PlayerScreen(trackId: String) {
-    val track by viewModel.getTrack(trackId).collectAsState()
+fun PlayerScreen(
+    trackId: String,
+    modifier: Modifier = Modifier
+) {
+    val viewModel: SpotifyVM = viewModel()
     var isPlaying by remember { mutableStateOf(false) }
+    val track by viewModel.currentTrack.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        track?.let {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                // Portada del álbum
-                AsyncImage(
-                    model = it.album.images.firstOrNull()?.url,
-                    contentDescription = null,
-                    modifier = Modifier.size(300.dp)
-                )
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Portada del álbum
+        AsyncImage(
+            model = track?.album?.images?.firstOrNull()?.url,
+            contentDescription = "Portada del álbum",
+            modifier = Modifier
+                .size(250.dp)
+                .padding(16.dp)
+        )
 
-                // Información de la canción
-                Text(it.name, style = MaterialTheme.typography.titleMedium)
-                Text(it.artists.joinToString { a -> a.name }, style = MaterialTheme.typography.bodyMedium)
+        // Información de la canción
+        Text(
+            text = track?.name ?: "Cargando...",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(16.dp)
+        )
 
-                // Controles del reproductor
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { /* Anterior */ }) {
-                        Icon(Icons.Default.SkipPrevious, null)
-                    }
+        Text(
+            text = track?.artists?.joinToString { it.name } ?: "",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
 
-                    IconButton(onClick = { isPlaying = !isPlaying }) {
-                        Icon(if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow, null)
-                    }
-
-                    IconButton(onClick = { /* Siguiente */ }) {
-                        Icon(Icons.Default.SkipNext, null)
-                    }
-                }
-            }
-        } ?: CircularProgressIndicator()
+        // Botón simple en lugar de IconButton
+        Button(
+            onClick = { isPlaying = !isPlaying },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = if (isPlaying) "Pausar" else "Reproducir")
+        }
     }
 }
