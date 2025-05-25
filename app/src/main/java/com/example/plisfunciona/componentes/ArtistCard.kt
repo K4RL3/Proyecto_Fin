@@ -2,6 +2,7 @@ package com.example.plisfunciona.componentes
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -14,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.plisfunciona.R
 import com.example.plisfunciona.modelo.Artist
 
 @Composable
@@ -39,9 +42,11 @@ fun ArtistCard(
                 model = artist.images?.firstOrNull()?.url ?: "",
                 contentDescription = "Foto de ${artist.name}",
                 modifier = Modifier
-                    .size(120.dp)
+                    .fillMaxWidth()
+                    .size(200.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.default_artist_image)
             )
 
             Text(

@@ -29,24 +29,22 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SpotifyVM = viewModel()
-    val playlists by viewModel.recommendedPlaylists.collectAsState(initial = emptyList())
-    val recentTracks by viewModel.recentTracks.collectAsState(initial = emptyList())
+    val playlists by viewModel.recommendedPlaylists.collectAsState()
+    val recentTracks by viewModel.recentTracks.collectAsState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState())
     ) {
+        // Sección de Playlists
         Text(
             text = "Tus playlists",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 8.dp)
         )
         
-        LazyRow(
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        LazyRow {
             items(playlists) { playlist ->
                 PlaylistCard(
                     playlist = playlist,
@@ -57,6 +55,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Sección de Tracks Recientes
         Text(
             text = "Recientemente escuchado",
             style = MaterialTheme.typography.headlineMedium,

@@ -33,4 +33,13 @@ object Retrofit{
         // En una app real, deberías implementar el flujo OAuth2 completo
         return "TU_TOKEN_DE_ACCESO"
     }
+
+    private fun getAccessToken(): String {
+        // Usa BuildConfig para acceder a las variables
+        val clientId = BuildConfig.SPOTIFY_CLIENT_ID
+        val clientSecret = BuildConfig.SPOTIFY_CLIENT_SECRET
+
+        // Implementa OAuth2 (ejemplo simplificado)
+        return obtenerTokenDeSpotify(clientId, clientSecret) // Función que harás tú
+    }
 }

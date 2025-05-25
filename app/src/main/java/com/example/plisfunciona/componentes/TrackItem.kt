@@ -17,9 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.size
 
 @Composable
-fun TrackItem(track: Track, onClick: () -> Unit) {
+fun TrackItem(
+    track: Track,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(8.dp),
