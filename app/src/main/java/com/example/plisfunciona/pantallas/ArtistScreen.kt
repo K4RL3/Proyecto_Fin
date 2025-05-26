@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.plisfunciona.componentes.TrackItem
 import com.example.plisfunciona.modelo.Artist
+import com.example.plisfunciona.modelo.Track
 import com.example.plisfunciona.viewmodel.SpotifyVM
 import androidx.compose.runtime.collectAsState
 
@@ -27,27 +28,24 @@ fun ArtistScreen(
     navController: NavController
 ) {
     val viewModel: SpotifyVM = viewModel()
-    
-    // Observar estados
-    LaunchedEffect(artistId) {
-        viewModel.loadArtistDetails(artistId)
-    }
-    
-    val artist by viewModel.currentArtist.collectAsState()
-    val tracks by viewModel.artistTopTracks.collectAsState()
 
-    // UI Principal
+    // Cargar datos del artista y sus canciones top
+    LaunchedEffect(artistId) {
+        viewModel.loadArtist(artistId)
+        viewModel.loadArtistTopTracks(artistId)
+    }
+
+    val artist by viewModel.currentArtist.collectAsState()
+    val tracks by viewModel.artisrTopTracks.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
     ) {
-        // Header con imagen del artista
         item {
             ArtistHeader(artist)
             Spacer(modifier = Modifier.height(16.dp))
         }
-
-        // Lista de canciones
         item {
             Text(
                 text = "Top Canciones",
@@ -55,13 +53,10 @@ fun ArtistScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-
-        // Lista de tracks
         items(tracks) { track ->
-            Text(
-                text = track.name,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(vertical = 8.dp)
+            TrackItem(
+                track = track,
+                onClick = { navController.navigate("player/${track.id}") }
             )
         }
     }
@@ -74,7 +69,6 @@ private fun ArtistHeader(artist: Artist?) {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Imagen del artista
             AsyncImage(
                 model = it.images?.firstOrNull()?.url,
                 contentDescription = "Foto de ${it.name}",
@@ -82,15 +76,11 @@ private fun ArtistHeader(artist: Artist?) {
                     .size(200.dp)
                     .padding(8.dp)
             )
-            
-            // Nombre del artista
             Text(
                 text = it.name,
                 style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
-            
-            // Seguidores
             Text(
                 text = "${it.followers?.total ?: 0} seguidores",
                 style = MaterialTheme.typography.bodyMedium

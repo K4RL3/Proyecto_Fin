@@ -58,7 +58,7 @@ fun HomeScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
         }
-
+        
         // Sección de Tracks Recientes
         item {
             Text(
@@ -67,7 +67,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
+        
         items(recentTracks) { track ->
             TrackItem(
                 track = track,

@@ -2,11 +2,7 @@ package com.example.plisfunciona.repositorio
 
 import javax.inject.Inject
 import com.example.plisfunciona.api.SpotifyAPI
-import com.example.plisfunciona.modelo.Artist
-import com.example.plisfunciona.modelo.Playlist
-import com.example.plisfunciona.modelo.PlaylistResponse
-import com.example.plisfunciona.modelo.SearchResponse
-import com.example.plisfunciona.modelo.TracksResponse
+import com.example.plisfunciona.modelo.*
 
 
 class SpotifyRepository @Inject constructor(
@@ -17,7 +13,7 @@ class SpotifyRepository @Inject constructor(
         return try {
             apiService.getUserPlaylists()
         } catch (e: Exception) {
-            PlaylistResponse(emptyList())
+            PlaylistResponse(Playlists(items = emptyList()))
         }
     }
 
@@ -26,7 +22,11 @@ class SpotifyRepository @Inject constructor(
         return try {
             apiService.search(query)
         } catch (e: Exception) {
-            SearchResponse(null, null, null)
+            SearchResponse(
+                tracks = Tracks(items = emptyList()),
+                artists = Artists(items = emptyList()),
+                playlists = Playlists(items = emptyList())
+            )
         }
     }
 
@@ -44,7 +44,7 @@ class SpotifyRepository @Inject constructor(
         return try {
             apiService.getArtistTopTracks(artistId)
         } catch (e: Exception) {
-            TracksResponse(emptyList())
+            TracksResponse(tracks = emptyList())
         }
     }
 
@@ -52,6 +52,15 @@ class SpotifyRepository @Inject constructor(
     suspend fun getPlaylist(playlistId: String): Playlist? {
         return try {
             apiService.getPlaylist(playlistId)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // Obtiene detalles de una canción
+    suspend fun getTrack(trackId: String): Track? {
+        return try {
+            apiService.getTrack(trackId)
         } catch (e: Exception) {
             null
         }
