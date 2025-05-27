@@ -36,7 +36,7 @@ fun ArtistScreen(
     }
 
     val artist by viewModel.currentArtist.collectAsState()
-    val tracks by viewModel.artisrTopTracks.collectAsState()
+    //val tracks by viewModel.artisrTopTracks.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -53,12 +53,12 @@ fun ArtistScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
-        items(tracks) { track ->
+        /*items(tracks) { track ->
             TrackItem(
                 track = track,
                 onClick = { navController.navigate("player/${track.id}") }
             )
-        }
+        }*/
     }
 }
 

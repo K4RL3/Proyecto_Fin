@@ -11,7 +11,7 @@ import com.example.plisfunciona.modelo.*
 import com.example.plisfunciona.repositorio.SpotifyRepository
 @HiltViewModel
 class SpotifyVM @Inject constructor(
-    private val repository: SpotifyRepository // Cambiar esto
+    private val repository: SpotifyRepository
 ) : ViewModel() {
 
     // Estados principales
@@ -30,6 +30,21 @@ class SpotifyVM @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _artisrTopTracks = MutableStateFlow<TracksResponse>(TracksResponse(emptyList()))
+    val artisrTopTracks = _artisrTopTracks.asStateFlow()
+
+    private val _recentTracks = MutableStateFlow<List<Track>>(emptyList())
+    val recentTracks = _recentTracks.asStateFlow()
+
+    private val _currentPlaylist = MutableStateFlow<Playlist?>(null)
+    val currentPlaylist = _currentPlaylist.asStateFlow()
+
+    private val _recommendedPlaylists = MutableStateFlow<List<Playlist>>(emptyList())
+    val recommendedPlaylists = _recommendedPlaylists.asStateFlow()
+
+    private val _artistTopTracks = MutableStateFlow<List<Track>>(emptyList())
+    val artistTopTracks = _artistTopTracks.asStateFlow()
+
     init {
         loadPlaylists()
     }
@@ -39,9 +54,36 @@ class SpotifyVM @Inject constructor(
             try {
                 _isLoading.value = true
                 val response = repository.getUserPlaylists()  // Usar repository en lugar de api
-                _playlists.value = response.playlists?.items ?: emptyList()
+                _playlists.value = response.playlists.items ?: emptyList()
+            } catch (e: Exception) { }
+            finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadRecentTracks() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val response = repository.getUserPlaylists()
+                _playlists.value = response.playlists.items ?: emptyList()
             } catch (e: Exception) {
-                // Manejo simple de errores
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    // Replace the empty implementation with this:
+    fun recommendedPlaylists() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val response = repository.getFeaturedPlaylists()
+                _recommendedPlaylists.value = response.playlists?.items ?: emptyList()
+            } catch (e: Exception) {
+                _recommendedPlaylists.value = emptyList()
             } finally {
                 _isLoading.value = false
             }
@@ -79,6 +121,20 @@ class SpotifyVM @Inject constructor(
             }
         }
     }
+    // Fix the loadArtistTopTracks function
+    fun loadArtistTopTracks(artistId: String) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val response = repository.getArtistTopTracks(artistId)
+                _artistTopTracks.value = response.tracks ?: emptyList()
+            } catch (e: Exception) {
+                _artistTopTracks.value = emptyList()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     fun loadTrack(trackId: String) {
         viewModelScope.launch {
@@ -87,6 +143,20 @@ class SpotifyVM @Inject constructor(
                 _currentTrack.value = repository.getTrack(trackId)
             } catch (e: Exception) {
                 _currentTrack.value = null
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadPlaylistDetails(playlistId: String) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                val playlist = repository.getPlaylist(playlistId)
+                _currentPlaylist.value = playlist
+            } catch (e: Exception) {
+                _currentPlaylist.value = null
             } finally {
                 _isLoading.value = false
             }

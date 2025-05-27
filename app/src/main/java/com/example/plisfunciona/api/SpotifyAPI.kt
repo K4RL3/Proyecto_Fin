@@ -120,6 +120,8 @@ class SpotifyAPI @Inject constructor(
     suspend fun getTrack(id: String) = spotifyService.getTrack(id)
     suspend fun getPlaylist(id: String) = spotifyService.getPlaylist(id)
     suspend fun getArtistTopTracks(id: String) = spotifyService.getArtistTopTracks(id)
+
     suspend fun getFeaturedPlaylists() = spotifyService.getRecommendedPlaylists()
     suspend fun getRecentTracks() = spotifyService.getRecentTracks()
+    suspend fun  getRecommendedPlaylists() = spotifyService.getRecommendedPlaylists()
 }

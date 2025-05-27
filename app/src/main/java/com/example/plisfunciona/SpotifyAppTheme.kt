@@ -1,13 +1,2 @@
 package com.example.plisfunciona
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-
-@Composable
-fun PlisfuncionaTheme(
-    content: @Composable () -> Unit
-) {
-    MaterialTheme(
-        content = content
-    )
-}

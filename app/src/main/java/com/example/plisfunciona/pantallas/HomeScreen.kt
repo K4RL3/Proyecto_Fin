@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -23,6 +24,12 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: SpotifyVM = viewModel()
+    
+    // Cargar datos cuando se inicie la pantalla
+    LaunchedEffect(Unit) {
+        viewModel.loadRecentTracks()
+        viewModel.recommendedPlaylists()
+    }
     
     // Estados básicos
     val playlists by viewModel.recommendedPlaylists.collectAsState(initial = emptyList())

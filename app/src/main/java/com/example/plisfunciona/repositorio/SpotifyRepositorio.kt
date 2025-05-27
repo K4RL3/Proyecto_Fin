@@ -65,4 +65,21 @@ class SpotifyRepository @Inject constructor(
             null
         }
     }
+
+    // Obtiene playlists recomendadas
+    suspend fun getFeaturedPlaylists(): PlaylistResponse {
+        return try {
+            apiService.getRecommendedPlaylists()
+        } catch (e: Exception) {
+            PlaylistResponse(Playlists(items = emptyList()))
+        }
+    }
+
+    suspend fun getRecentTracks(): TracksResponse {
+        return try {
+            apiService.getRecentTracks()
+        } catch (e: Exception) {
+            TracksResponse(tracks = emptyList())
+        }
+    }
 }
