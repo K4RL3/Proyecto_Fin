@@ -9,9 +9,11 @@ import javax.inject.Inject
 import com.example.plisfunciona.api.SpotifyAPI
 import com.example.plisfunciona.modelo.*
 import com.example.plisfunciona.repositorio.SpotifyRepository
+
+
 @HiltViewModel
 class SpotifyVM @Inject constructor(
-    private val repository: SpotifyRepository
+    private val repository: SpotifyRepository // <--- This needs to be provided
 ) : ViewModel() {
 
     // Estados principales
